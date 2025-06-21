@@ -1,0 +1,7 @@
+-- Truncate all relevant tables and reset identities
+TRUNCATE TABLE vacations_like RESTART IDENTITY CASCADE;
+TRUNCATE TABLE vacations_vacation RESTART IDENTITY CASCADE;
+TRUNCATE TABLE vacations_country RESTART IDENTITY CASCADE;
+TRUNCATE TABLE vacations_user RESTART IDENTITY CASCADE;
+TRUNCATE TABLE vacations_role RESTART IDENTITY CASCADE;
+

@@ -1,9 +1,15 @@
 from django.db import models
 
 class Role(models.Model):
+    """
+    Represents a role in the system (e.g., admin, user).
+    """
     name = models.CharField(max_length=50, unique=True)
 
 class User(models.Model):
+    """
+    Represents a user in the system.
+    """
     first_name = models.CharField(max_length=50)
     last_name = models.CharField(max_length=50)
     email = models.EmailField(unique=True)
@@ -11,9 +17,15 @@ class User(models.Model):
     role = models.ForeignKey(Role, on_delete=models.PROTECT)
 
 class Country(models.Model):
+    """
+    Represents a country where vacations are located.
+    """
     name = models.CharField(max_length=50, unique=True)
 
 class Vacation(models.Model):
+    """
+    Represents a vacation with its details.
+    """
     country = models.ForeignKey(Country, on_delete=models.CASCADE)
     description = models.TextField()
     start_date = models.DateField()
@@ -22,6 +34,10 @@ class Vacation(models.Model):
     image_filename = models.CharField(max_length=255)
 
 class Like(models.Model):
+    """
+    Represents a like from a user on a vacation.
+    Ensures a user can like a vacation only once.
+    """
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     vacation = models.ForeignKey(Vacation, on_delete=models.CASCADE)
 
