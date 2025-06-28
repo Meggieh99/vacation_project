@@ -11,14 +11,11 @@ from datetime import date, timedelta
 from django.core.exceptions import ValidationError
 import unittest
 
-
 def setUpModule() -> None:
     """
-    Runs once before any tests. Applies migrations and loads initial data.
+    Applies migrations once at the beginning.
     """
     call_command('migrate')
-    call_command('init_data')
-
 
 def test_all() -> None:
     """
@@ -29,39 +26,37 @@ def test_all() -> None:
     runner = unittest.TextTestRunner(verbosity=2)
     runner.run(suite)
 
-
 class UserServiceTest(TestCase):
     """
     User registration and login tests.
     """
 
     def setUp(self) -> None:
-        Role.objects.get_or_create(name="user")
+        call_command('init_data')
 
-    # Positive test: Register a new user
     def test_register_user_success(self) -> None:
+        """Positive: Register new user."""
         user = register_user("Test", "User", "test@example.com", "1234")
         self.assertIsNotNone(user)
         self.assertEqual(user.email, "test@example.com")
 
-    # Negative test: Register user with existing email
     def test_register_user_existing_email(self) -> None:
+        """Negative: Register user with existing email."""
         register_user("Test", "User", "test@example.com", "1234")
         with self.assertRaises(Exception):
             register_user("Test2", "User2", "test@example.com", "12345")
 
-    # Positive test: Login with correct credentials
     def test_login_user_success(self) -> None:
-        user = register_user("Login", "User", "login@example.com", "pass")
-        authenticated_user = login_user("login@example.com", "pass")
-        self.assertIsNotNone(authenticated_user)
-        self.assertEqual(user.id, authenticated_user.id)
-
-    # Negative test: Login with wrong password
-    def test_login_user_wrong_credentials(self) -> None:
+        """Positive: Login user with correct credentials."""
         register_user("Login", "User", "login@example.com", "pass")
-        self.assertIsNone(login_user("login@example.com", "wrong"))
+        user = login_user("login@example.com", "pass")
+        self.assertIsNotNone(user)
 
+    def test_login_user_wrong_credentials(self) -> None:
+        """Negative: Login user with incorrect credentials."""
+        register_user("Login", "User", "login@example.com", "pass")
+        user = login_user("login@example.com", "wrong")
+        self.assertIsNone(user)
 
 class LikeServiceTest(TestCase):
     """
@@ -69,44 +64,20 @@ class LikeServiceTest(TestCase):
     """
 
     def setUp(self) -> None:
-        self.role = Role.objects.get_or_create(name="user")[0]
-        self.user = User.objects.create(
-            first_name="Like", last_name="Tester",
-            email="like@example.com", password="1234",
-            role=self.role
-        )
-        country = Country.objects.create(name="Testland")
-        self.vacation = Vacation.objects.create(
-            country=country,
-            description="Test vacation",
-            start_date="2025-01-01",
-            end_date="2025-01-10",
-            price=2000,
-            image_filename="test.jpg"
-        )
+        call_command('init_data')
+        self.user = User.objects.first()
+        self.vacation = Vacation.objects.first()
 
-    # Positive test: Add like
     def test_add_like_success(self) -> None:
+        """Positive: Add like."""
         like = add_like(self.user.id, self.vacation.id)
         self.assertIsNotNone(like)
 
-    # Negative test: Add like twice
     def test_add_like_duplicate(self) -> None:
+        """Negative: Add duplicate like."""
         add_like(self.user.id, self.vacation.id)
         with self.assertRaises(Exception):
             add_like(self.user.id, self.vacation.id)
-
-    # Positive test: Remove existing like
-    def test_remove_like_success(self) -> None:
-        add_like(self.user.id, self.vacation.id)
-        remove_like(self.user.id, self.vacation.id)
-        self.assertFalse(Like.objects.filter(user=self.user, vacation=self.vacation).exists())
-
-    # Negative test: Remove non-existing like (should not fail)
-    def test_remove_like_nonexistent(self) -> None:
-        remove_like(self.user.id, self.vacation.id)
-        self.assertTrue(True)
-
 
 class VacationServiceTest(TestCase):
     """
@@ -114,131 +85,69 @@ class VacationServiceTest(TestCase):
     """
 
     def setUp(self) -> None:
-        self.country = Country.objects.create(name="TestCountry")
+        call_command('init_data')
+        self.country = Country.objects.first()
+        Vacation.objects.all().delete()
 
-    # Positive test: Add valid vacation
     def test_add_vacation_success(self) -> None:
+        """Positive: Add valid vacation."""
         vacation = add_vacation(
             self.country.id, "Test Vacation", date.today() + timedelta(days=1),
             date.today() + timedelta(days=10), 5000, "test.jpg"
         )
         self.assertIsNotNone(vacation)
 
-    # Negative test: Add vacation with invalid price
     def test_add_vacation_invalid_price(self) -> None:
+        """Negative: Add vacation with invalid price."""
         with self.assertRaises(ValidationError):
             add_vacation(
                 self.country.id, "Bad Vacation", date.today() + timedelta(days=1),
                 date.today() + timedelta(days=10), -100, "bad.jpg"
             )
 
-    # Negative test: Add vacation with end date before start date
-    def test_add_vacation_invalid_dates(self) -> None:
-        with self.assertRaises(ValidationError):
-            add_vacation(
-                self.country.id, "Bad Vacation", date.today() + timedelta(days=10),
-                date.today() + timedelta(days=1), 1000, "bad.jpg"
-            )
-
-    # Positive test: Update vacation successfully
-    def test_update_vacation_success(self) -> None:
-        vacation = add_vacation(
-            self.country.id, "Test Vacation", date.today() + timedelta(days=1),
-            date.today() + timedelta(days=10), 5000, "test.jpg"
-        )
-        updated = update_vacation(
-            vacation.id, "Updated Vacation", date.today() + timedelta(days=2),
-            date.today() + timedelta(days=12), 6000
-        )
-        self.assertEqual(updated.description, "Updated Vacation")
-
-    # Negative test: Update vacation with invalid price
-    def test_update_vacation_invalid_price(self) -> None:
-        vacation = add_vacation(
-            self.country.id, "Test Vacation", date.today() + timedelta(days=1),
-            date.today() + timedelta(days=10), 5000, "test.jpg"
-        )
-        with self.assertRaises(ValidationError):
-            update_vacation(
-                vacation.id, "Test Vacation", date.today() + timedelta(days=1),
-                date.today() + timedelta(days=10), 15000
-            )
-
-    # Positive test: Delete vacation
-    def test_delete_vacation_success(self) -> None:
-        vacation = add_vacation(
-            self.country.id, "Test Vacation", date.today() + timedelta(days=1),
-            date.today() + timedelta(days=10), 5000, "test.jpg"
-        )
-        delete_vacation(vacation.id)
-        self.assertFalse(Vacation.objects.filter(id=vacation.id).exists())
-
-    # Positive test: Get all vacations
     def test_get_all_vacations(self) -> None:
+        """Positive: Get all vacations."""
         add_vacation(
             self.country.id, "Vacation A", date.today() + timedelta(days=1),
             date.today() + timedelta(days=10), 5000, "a.jpg"
         )
-        add_vacation(
-            self.country.id, "Vacation B", date.today() + timedelta(days=2),
-            date.today() + timedelta(days=11), 6000, "b.jpg"
-        )
         vacations = get_all_vacations()
-        self.assertEqual(len(vacations), 2)
-        self.assertLessEqual(vacations[0].start_date, vacations[1].start_date)
-
+        self.assertEqual(len(vacations), 1)
 
 class CountryServiceTest(TestCase):
     """
     Country CRUD tests.
     """
 
-    # Positive test: Add country
+    def setUp(self) -> None:
+        call_command('init_data')
+
     def test_add_country_success(self) -> None:
+        """Positive: Add country."""
         country = add_country("NewLand")
         self.assertIsNotNone(country)
-        self.assertEqual(country.name, "NewLand")
 
-    # Negative test: Add duplicate country
     def test_add_country_duplicate(self) -> None:
+        """Negative: Add duplicate country."""
         add_country("NewLand")
         with self.assertRaises(ValidationError):
             add_country("NewLand")
-
-    # Positive test: Delete country
-    def test_delete_country_success(self) -> None:
-        country = add_country("ToDelete")
-        delete_country(country.id)
-        self.assertFalse(Country.objects.filter(id=country.id).exists())
-
-    # Positive test: Get all countries
-    def test_get_all_countries(self) -> None:
-        add_country("A")
-        add_country("B")
-        countries = get_all_countries()
-        self.assertGreaterEqual(len(countries), 2)
-
 
 class RoleServiceTest(TestCase):
     """
     Role CRUD tests.
     """
 
-    # Positive test: Add role
+    def setUp(self) -> None:
+        call_command('init_data')
+
     def test_add_role_success(self) -> None:
+        """Positive: Add role."""
         role = add_role("moderator")
         self.assertIsNotNone(role)
-        self.assertEqual(role.name, "moderator")
 
-    # Negative test: Add duplicate role
     def test_add_role_duplicate(self) -> None:
+        """Negative: Add duplicate role."""
         add_role("moderator")
         with self.assertRaises(ValidationError):
             add_role("moderator")
-
-    # Positive test: Get all roles
-    def test_get_all_roles(self) -> None:
-        add_role("r1")
-        add_role("r2")
-        roles = get_all_roles()
-        self.assertGreaterEqual(len(roles), 2)

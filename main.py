@@ -1,9 +1,9 @@
-from vacations.tests import test_all
 import os
 import django
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "config.settings")
 django.setup()
+from vacations.tests import test_all
 
 
 if __name__ == "__main__":
