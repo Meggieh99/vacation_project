@@ -28,10 +28,10 @@ class Command(BaseCommand):
         )
 
         User.objects.get_or_create(
-            first_name="John",
+            first_name="Dan",
             last_name="Doe",
-            email="john@example.com",
-            password="johnpass",
+            email="Dan@example.com",
+            password="Danpass",
             role=user_role
         )
 
