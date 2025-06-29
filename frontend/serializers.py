@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Vacation, Country, User
+from vacations.models import Vacation, Country, User, Like
 
 class VacationSerializer(serializers.ModelSerializer):
     class Meta:
@@ -14,4 +14,8 @@ class CountrySerializer(serializers.ModelSerializer):
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
+        fields = '__all__'
+class LikeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Like
         fields = '__all__'
