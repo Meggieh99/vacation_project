@@ -10,4 +10,5 @@ urlpatterns = [
     path('vacations/<int:vacation_id>/edit/', EditVacationView.as_view(), name="vacation-edit"),
     path('vacations/<int:vacation_id>/delete/', DeleteVacationView.as_view(), name="vacation-delete"),
     
+    
 ]
