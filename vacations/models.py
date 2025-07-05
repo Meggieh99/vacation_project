@@ -12,15 +12,17 @@ class User(models.Model):
     """
     first_name = models.CharField(max_length=50)
     last_name = models.CharField(max_length=50)
-    email = models.EmailField(unique=True)
+    email = models.EmailField(unique=True, null=False, blank=False)
     password = models.CharField(max_length=128)
     role = models.ForeignKey(Role, on_delete=models.PROTECT)
+    is_staff = models.BooleanField(default=False)  
 
 class Country(models.Model):
     """
     Represents a country where vacations are located.
     """
-    name = models.CharField(max_length=50, unique=True)
+    name = models.CharField(max_length=50, unique=True, null=False, blank=False)
+
 
 class Vacation(models.Model):
     """

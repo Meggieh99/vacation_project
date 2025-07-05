@@ -2,6 +2,7 @@ from django.core.management.base import BaseCommand
 from vacations.models import Role, User, Country, Vacation
 from datetime import date
 
+
 class Command(BaseCommand):
     """
     Custom Django management command to populate the database with initial data.
@@ -12,38 +13,46 @@ class Command(BaseCommand):
     def handle(self, *args, **kwargs) -> None:
         """
         Populates initial data including roles, users, countries, and vacations.
+        Ensures no duplicates are inserted.
         """
 
         # Create roles
         admin_role, _ = Role.objects.get_or_create(name="admin")
         user_role, _ = Role.objects.get_or_create(name="user")
 
-        # Create users
-        User.objects.get_or_create(
-            first_name="Admin",
-            last_name="Manager",
+        # Create users (with update to prevent duplicates)
+        User.objects.update_or_create(
             email="admin@example.com",
-            password="adminpass",
-            role=admin_role
+            defaults={
+                "first_name": "Admin",
+                "last_name": "Manager",
+                "password": "adminpass",
+                "role": admin_role,
+                "is_staff": True
+            }
         )
 
-        User.objects.get_or_create(
-            first_name="Dan",
-            last_name="Doe",
+        User.objects.update_or_create(
             email="Dan@example.com",
-            password="Danpass",
-            role=user_role
+            defaults={
+                "first_name": "Dan",
+                "last_name": "Doe",
+                "password": "Danpass",
+                "role": user_role
+            }
         )
 
         # Create countries
-        country_names = ["Israel", "USA", "France", "Germany",
-                         "Italy", "Spain", "Canada", "Brazil", "Japan", "Mexico"]
-        country_objs = [
+        country_names: list[str] = [
+            "Israel", "USA", "France", "Germany",
+            "Italy", "Spain", "Canada", "Brazil", "Japan", "Mexico"
+        ]
+        country_objs: list[Country] = [
             Country.objects.get_or_create(name=name)[0] for name in country_names
         ]
 
         # Create vacations
-        vacations_data = [
+        vacations_data: list[tuple[str, int, date, date, int, str]] = [
             ("Beach in Tel Aviv", 0, date(2025, 7, 10), date(2025, 7, 20), 2500, "tel_aviv.jpg"),
             ("New York City Trip", 1, date(2025, 8, 1), date(2025, 8, 10), 3500, "nyc.jpg"),
             ("Paris Adventure", 2, date(2025, 9, 5), date(2025, 9, 15), 3000, "paris.jpg"),
@@ -60,12 +69,12 @@ class Command(BaseCommand):
 
         for desc, country_idx, start, end, price, img in vacations_data:
             Vacation.objects.get_or_create(
-                country=country_objs[country_idx],
                 description=desc,
+                country=country_objs[country_idx],
                 start_date=start,
                 end_date=end,
                 price=price,
                 image_filename=img
             )
 
-        self.stdout.write(self.style.SUCCESS('Data populated successfully.'))
+        self.stdout.write(self.style.SUCCESS("Data populated successfully."))
