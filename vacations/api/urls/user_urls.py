@@ -11,5 +11,8 @@ urlpatterns: list = [
     # HTML form pages
     path('register/form/', RegisterPageView.as_view(), name='register-form'),
     path('login/form/', LoginPageView.as_view(), name='login-form'),
-    path('', LoginFormHandlerView.as_view(), name='user-login'),  # Default page = login handler
+    path('login/submit/', LoginFormHandlerView.as_view(), name='user-login'),
+
+    # Default route
+    path('', LoginPageView.as_view(), name='home'),
 ]

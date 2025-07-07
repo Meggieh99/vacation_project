@@ -8,6 +8,7 @@ from typing import Any
 from rest_framework.permissions import IsAdminUser
 
 
+
 class VacationListView(APIView):
     """
     Returns a list of all vacations in the system,
@@ -94,4 +95,3 @@ class DeleteVacationView(APIView):
 
         return Response({"message": "Vacation deleted successfully."})
     
-

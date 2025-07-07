@@ -3,29 +3,43 @@
 {% block title %}Register{% endblock %}
 
 {% block content %}
-<h2 class="form-title">Register</h2>
+<div class="form-container">
+    <h2 class="form-title text-center">Register</h2>
 
-<form method="post" action="{% url 'register-form' %}">
-    {% csrf_token %}
-
-    <label>First Name:</label>
-    <input type="text" name="first_name" required>
-
-    <label>Last Name:</label>
-    <input type="text" name="last_name" required>
-
-    <label>Email:</label>
-    <input type="email" name="email" required>
-
-    <label>Password:</label>
-    <input type="password" name="password" minlength="4" required>
-
-    {% if error_message %}
-        <p class="error">{{ error_message }}</p>
+    {% if messages %}
+        <ul class="error-list">
+            {% for message in messages %}
+                <li class="error">{{ message }}</li>
+            {% endfor %}
+        </ul>
     {% endif %}
 
-    <button type="submit">Register</button>
-</form>
-<p class="form-footer">already a member?</p>
-<p><a href="{% url 'login-form' %}">Login here</a></p>
+    <form method="post" action="{% url 'register-form' %}" class="form-container">
+        {% csrf_token %}
+         {{ form.as_p }}
+        <label>First Name:</label>
+        <input type="text" name="first_name" required>
+
+        <label>Last Name:</label>
+        <input type="text" name="last_name" required>
+
+        <label>Email:</label>
+        <input type="email" name="email" required>
+
+        <label>Password:</label>
+        <input 
+            type="password" 
+            name="password" 
+            minlength="8" 
+            required
+            oninvalid="this.setCustomValidity('Password must be at least 8 characters long.')"
+            oninput="this.setCustomValidity('')"
+        >
+
+        <button type="submit">Register</button>
+    </form>
+
+    <p class="form-footer">Already a member?</p>
+    <p><a href="{% url 'login-form' %}">Login here</a></p>
+</div>
 {% endblock %}

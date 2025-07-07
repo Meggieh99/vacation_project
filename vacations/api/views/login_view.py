@@ -1,46 +1,35 @@
 from django.shortcuts import render, redirect
-from django.views.generic import TemplateView
-from django.contrib import messages
-from django.core.validators import validate_email
-from django.core.exceptions import ValidationError
+from django.views import View
 from django.urls import reverse
 from vacations.models import User
-from django.views import View
+from django.http import HttpRequest, HttpResponse
 
 
-class LoginPageView(TemplateView):
+class LoginPageView(View):
     """
-    View for rendering the login form page.
+    Render the login form.
     """
-    template_name = 'auth/login.html'
+
+    def get(self, request: HttpRequest) -> HttpResponse:
+        """Display login page."""
+        return render(request, 'auth/login.html')
 
 
 class LoginFormHandlerView(View):
     """
-    Handles the login POST request.
+    Process login form submission and manage session.
     """
 
-    def post(self, request):
-        email = request.POST.get("email", "").strip()
-        password = request.POST.get("password", "").strip()
-
-        if not email or not password:
-            messages.error(request, "All fields are required.")
-            return render(request, "auth/login.html")
-
-        try:
-            validate_email(email)
-        except ValidationError:
-            messages.error(request, "Invalid email format.")
-            return render(request, "auth/login.html")
-
-        if len(password) < 4:
-            messages.error(request, "Password must be at least 4 characters.")
-            return render(request, "auth/login.html")
+    def post(self, request: HttpRequest) -> HttpResponse:
+        email = request.POST.get('email')
+        password = request.POST.get('password')
 
         user = User.objects.filter(email=email, password=password).first()
-        if not user:
-            messages.error(request, "Invalid email or password.")
-            return render(request, "auth/login.html")
 
-        return redirect(reverse("vacation-list"))
+        if user:
+            request.session['user_id'] = user.id
+            return redirect(reverse('vacation-list'))
+
+        return render(request, 'auth/login.html', {
+            'error_message': 'Invalid email or password'
+        })

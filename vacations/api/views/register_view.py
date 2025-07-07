@@ -1,52 +1,30 @@
 from django.shortcuts import render, redirect
-from django.core.validators import validate_email
-from django.core.exceptions import ValidationError
 from django.urls import reverse
-from django.views import View
+from vacations.api.serializers.user_serializer import RegisterSerializer
 from django.contrib import messages
-from vacations.models import User, Role
+from django.views import View
+from django.http import HttpRequest, HttpResponse
+from vacations.models import User
 
 
 class RegisterPageView(View):
     """
-    Renders the user registration HTML form page and handles form submission.
+    Handle user registration via HTML form.
     """
 
-    def get(self, request):
+    def get(self, request: HttpRequest) -> HttpResponse:
+        """Render the registration form."""
         return render(request, 'auth/register.html')
 
-    def post(self, request):
-        first_name = request.POST.get("first_name", "").strip()
-        last_name = request.POST.get("last_name", "").strip()
-        email = request.POST.get("email", "").strip()
-        password = request.POST.get("password", "").strip()
+    def post(self, request: HttpRequest) -> HttpResponse:
+        """Process registration form data."""
+        serializer = RegisterSerializer(data=request.POST)
+        if serializer.is_valid():
+            user = serializer.save()
+            request.session['user_id'] = user.id
+            return redirect(reverse('vacation-list'))
 
-        if not all([first_name, last_name, email, password]):
-            messages.error(request, "All fields are required.")
-            return render(request, "auth/register.html")
-
-        try:
-            validate_email(email)
-        except ValidationError:
-            messages.error(request, "Invalid email format.")
-            return render(request, "auth/register.html")
-
-        if len(password) < 4:
-            messages.error(request, "Password must be at least 4 characters.")
-            return render(request, "auth/register.html")
-
-        if User.objects.filter(email=email).exists():
-            messages.error(request, "Email already taken.")
-            return render(request, "auth/register.html")
-
-        role = Role.objects.get(name="user")
-
-        User.objects.create(
-            first_name=first_name,
-            last_name=last_name,
-            email=email,
-            password=password,
-            role=role
-        )
-
-        return redirect(reverse("vacation-list"))
+        for field, errors in serializer.errors.items():
+            for error in errors:
+                messages.error(request, f"{field}: {error}")
+        return render(request, 'auth/register.html')

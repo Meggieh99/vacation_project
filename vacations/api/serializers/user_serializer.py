@@ -1,7 +1,5 @@
 from rest_framework import serializers
 from vacations.models import User, Role
-from django.core.exceptions import ValidationError
-
 
 class RegisterSerializer(serializers.ModelSerializer):
     """
@@ -14,8 +12,8 @@ class RegisterSerializer(serializers.ModelSerializer):
         fields = ['first_name', 'last_name', 'email', 'password']
 
     def validate_password(self, value: str) -> str:
-        if len(value) < 4:
-            raise serializers.ValidationError("Password must be at least 4 characters long.")
+        if len(value) < 8:
+            raise serializers.ValidationError("Password must be at least 8 characters long.")
         return value
 
     def validate_email(self, value: str) -> str:

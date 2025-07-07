@@ -1,27 +1,22 @@
 from rest_framework import serializers
 from vacations.models import User
-from typing import Optional
-
-
+from typing import Optional, Any
 
 class LoginSerializer(serializers.Serializer):
     """
-    Serializer for user login input validation.
+    Serializer for login validation. Ensures password has at least 8 characters.
     """
 
     email: serializers.EmailField = serializers.EmailField()
     password: serializers.CharField = serializers.CharField(
-        min_length=4,
-        error_messages={
-            "min_length": "Password must be at least 4 characters long.",
-            "blank": "Password is required."
-        }
+        min_length=8, 
+        error_messages={"min_length": "Password must be at least 8 characters."}
     )
-    
 
-    def validate(self, data: dict) -> dict:
+    def validate(self, data: dict[str, Any]) -> dict[str, Any]:
         """
-        Check if a user exists with given email and password.
+        Validate email and password against database.
+        Raises error if credentials are invalid.
         """
         email: str = data.get('email')
         password: str = data.get('password')

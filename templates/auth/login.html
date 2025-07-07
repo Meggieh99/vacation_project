@@ -6,18 +6,30 @@
 <div class="form-container">
     <h2 class="form-title text-center">Login</h2>
 
-    <form method="post" action="{% url 'user-login' %}">
+    <form method="post" action="{% url 'user-login' %}" class="form-container">
         {% csrf_token %}
+         {{ form.as_p }}
         <label for="email">Email:</label>
         <input type="email" name="email" id="email" required placeholder="Enter your email">
-
         <label for="password">Password:</label>
-         <input type="password" name="password" required placeholder="Enter your password">
-        {% if error_message %}
-            <p class="error">{{ error_message }}</p>
-        {% endif %}
+        <input 
+            name="password" 
+            required 
+            placeholder="Enter your password"
+            type="password"
+            minlength="8"
+            oninvalid="this.setCustomValidity('Password must be at least 8 characters long.')"
+            oninput="this.setCustomValidity('')"
+        >
 
         <button type="submit" class="btn-login">Login</button>
+        {% if messages %}
+    <ul class="error-list">
+        {% for message in messages %}
+            <li class="error">{{ message }}</li>
+        {% endfor %}
+    </ul>
+      {% endif %}
     </form>
 
     <p class="form-footer">Don't have an account?</p>
