@@ -3,8 +3,8 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 from vacations.api.serializers.like_serializer import LikeActionSerializer
+from rest_framework.authentication import SessionAuthentication
 from vacations.models import Like
-from typing import Any
 
 
 class LikeVacationView(APIView):
@@ -12,6 +12,7 @@ class LikeVacationView(APIView):
     Add a like for a vacation by the authenticated user.
     """
 
+    authentication_classes = [SessionAuthentication]
     permission_classes = [IsAuthenticated]
 
     def post(self, request) -> Response:
@@ -33,7 +34,7 @@ class UnlikeVacationView(APIView):
     """
     Remove a like for a vacation by the authenticated user.
     """
-
+    authentication_classes = [SessionAuthentication]
     permission_classes = [IsAuthenticated]
 
     def post(self, request) -> Response:

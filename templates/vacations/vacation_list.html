@@ -1,33 +1,38 @@
 {% extends 'layout.html' %}
 {% load static %}
-
 {% block title %}Vacation List{% endblock %}
 
 {% block content %}
-<h2 class="form-title">Vacation List</h2>
 
-<div class="vacation-container">
-    {% for vacation in vacations %}
-        <div class="vacation-card">
-            <h3>{{ vacation.country }}</h3>
-            <p>{{ vacation.description }}</p>
-            <p>Start: {{ vacation.start_date }}</p>
-            <p>End: {{ vacation.end_date }}</p>
-            <p>Price: ${{ vacation.price }}</p>
-            <p>Likes: {{ vacation.like_count }}</p>
 
-            {% if vacation.liked_by_user %}
-                <form method="post" action="{% url 'vacation-unlike' vacation.id %}">
-                    {% csrf_token %}
-                    <button type="submit">Unlike</button>
-                </form>
-            {% else %}
-                <form method="post" action="{% url 'vacation-like' vacation.id %}">
-                    {% csrf_token %}
-                    <button type="submit">Like</button>
-                </form>
-            {% endif %}
-        </div>
-    {% endfor %}
+<h2 class="form-title text-center">Vacation List</h2>
+
+<div class="vacation-grid">
+   {% for vacation in vacations %}
+   <div class="vacation-card">
+      <div class="card-image">
+         <img src="{% static 'images/' %}{{ vacation.image_filename }}" alt="{{ vacation.country }}">
+         
+         <!-- button like -->
+         <button 
+           class="like-btn like-badge {% if vacation.liked_by_user %}liked{% endif %}" 
+           data-vacation-id="{{ vacation.id }}" 
+           data-liked="{{ vacation.liked_by_user|yesno:'true,false' }}">
+           ♥ Like {{ vacation.like_count }}
+         </button>
+      </div>
+
+      <div class="card-body">
+         <div class="country-name">{{ vacation.country }}</div>
+         <div class="date-range">{{ vacation.start_date }} - {{ vacation.end_date }}</div>
+         <div class="description">{{ vacation.description }}</div>
+         <div class="price">${{ vacation.price }}</div>
+      </div>
+   </div>
+   {% endfor %}
 </div>
+
+<!-- JavaScript for the like functionality -->
+<script src="{% static 'js/like.js' %}"> 
+const csrfToken = '{{ csrf_token }}';</script>
 {% endblock %}

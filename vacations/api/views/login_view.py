@@ -33,3 +33,14 @@ class LoginFormHandlerView(View):
         return render(request, 'auth/login.html', {
             'error_message': 'Invalid email or password'
         })
+    
+class LogoutView(View):
+    """
+    Log the user out and redirect to login form.
+    """
+
+    def get(self, request: HttpRequest) -> HttpResponse:
+        request.session.flush()
+        return redirect('login-form')
+   
+    

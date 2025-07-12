@@ -1,110 +1,224 @@
+/* ---------- General ---------- */
 body {
-    font-family: Arial, sans-serif;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     background-color: #f4f4f4;
+    margin: 0;
+    padding: 0;
+}
+
+
+
+/* ---------- Navigation Bar ---------- */
+.navbar {
+    background-color: #007bff;
+    padding: 15px 30px;
     display: flex;
-    justify-content: center;
+    justify-content: space-between;
     align-items: center;
-    height: 100vh;
-    
+    color: white;
 }
-
-.login-form label {
-    color: #999999;
-    font-size: 14px;
-}
-
-.login-form p {
-    color: #999999;
-    font-size: 13px;
-    margin-top: 10px;
-    margin-bottom: 0;
-    text-align: center;
-}
-
-
-.login-form h2 {
-    text-align: center;
-    color: #007bff;
-    font-weight: bold;
-    margin-bottom: 20px;
-}
-
-
-.login-form a {
-    color: #007bff;
+.navbar a {
+    color: white;
     text-decoration: none;
-    font-size: 13px;
+    font-weight: bold;
 }
-.login-form a:hover {
+.navbar a:hover {
     text-decoration: underline;
 }
 
-.container {
-    background-color: white;
-    padding: 2rem;
-    border-radius: 10px;
-    box-shadow: 0 0 15px rgba(0,0,0,0.1);
-    width: 320px;
-    text-align: center;
+/* ---------- Form Wrapper (Centering vertically) ---------- */
+.form-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: calc(100vh - 60px); /* height minus navbar */
+    padding: 30px 20px;
 }
 
-h2 {
-    color: #333; 
-    font-size: 24px;
-    margin-bottom: 1rem;
+/* ---------- Form Container (Login/Register) ---------- */
+.form-container {
+    background-color: white;
+    width: 400px;
+    padding: 40px 35px;
+    border-radius: 12px;
+    box-shadow: 0 4px 25px rgba(0, 0, 0, 0.1);
+    transition: box-shadow 0.3s ease;
+}
+
+.form-container:hover {
+    box-shadow: 0 6px 30px rgba(0, 0, 0, 0.15);
+}
+.form-container {
+    background-color: white;
+    width: 400px;
+    padding: 40px 35px;
+    border-radius: 12px;
+    box-shadow: 0 4px 25px rgba(0, 0, 0, 0.1);
+    transition: box-shadow 0.3s ease;
+}
+
+.form-container:hover {
+    box-shadow: 0 6px 30px rgba(0, 0, 0, 0.15);
+}
+
+
+.form-title {
+    text-align: center;
+    color: #007bff;
+    font-size: 28px;
+    font-weight: bold;
+    margin-bottom: 25px;
 }
 
 label {
     display: block;
-    margin-top: 10px;
-    color: #6c757d; 
+    margin-top: 15px;
+    color: #333;
+    font-size: 14px;
     font-weight: bold;
-    text-align: left;
 }
 
 input {
     width: 100%;
-    padding: 0.5rem;
-    margin-top: 0.2rem;
-    border-radius: 5px;
+    padding: 10px;
+    margin-top: 6px;
+    border-radius: 6px;
     border: 1px solid #ccc;
     box-sizing: border-box;
+    font-size: 14px;
 }
 
 button {
     width: 100%;
     background-color: #007bff;
     color: white;
-    padding: 0.5rem;
+    padding: 12px;
     border: none;
-    border-radius: 5px;
-    margin-top: 1rem;
+    border-radius: 6px;
+    margin-top: 20px;
+    font-weight: bold;
+    font-size: 15px;
     cursor: pointer;
+    transition: background-color 0.2s ease;
 }
-
 button:hover {
     background-color: #0056b3;
 }
 
-a {
-    color: #007bff;
-    text-decoration: underline;
-    display: inline-block;
-    margin-top: 10px;
-}
 
 .error {
     color: red;
     margin-top: 0.5rem;
     font-size: 14px;
 }
-.form-title {
-  color: #007bff;
-  font-size: 24px;
-  font-weight: bold;
-  margin-bottom: 20px;
-}
 
 .form-footer {
     color: #6c757d;
+    font-size: 14px;
+    text-align: center;
+    margin-top: 20px;
 }
+
+/* ---------- Vacation Cards ---------- */
+.vacation-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 30px;
+    padding: 40px;
+    max-width: 1200px;
+    margin: auto;
+}
+
+.vacation-card {
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 0 15px rgba(0,0,0,0.15);
+    background-color: #fff;
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.2s ease;
+}
+.vacation-card:hover {
+    transform: scale(1.03);
+}
+
+.card-image img {
+   
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+}
+
+.card-body {
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.country-name {
+    font-size: 1.3em;
+    font-weight: bold;
+    margin-bottom: 5px;
+    color: #007bff;
+}
+
+.date-range {
+    font-size: 0.95em;
+    color: #6c757d;
+    margin-bottom: 5px;
+}
+
+.description {
+    font-size: 0.9em;
+    color: #444;
+    margin-bottom: 10px;
+}
+
+.like-info {
+    font-size: 0.85em;
+    color: #e91e63;
+    margin-top: auto;
+}
+
+.price {
+    background-color: #008cff;
+    color: white;
+    text-align: center;
+    padding: 10px;
+    border-radius: 5px;
+    font-weight: bold;
+    margin-top: 10px;
+}
+
+.like-icon.liked {
+    color: red;
+}
+
+.text-center {
+    text-align: center;
+}
+
+.like-badge {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  background-color: white;
+  padding: 5px 10px;
+  border-radius: 20px;
+  font-size: 14px;
+  font-weight: bold;
+  color: #007bff;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  border: none;
+}
+
+.liked {
+  color:  #e91e63;
+}
+
+.card-image {
+  position: relative;
+}
+

@@ -3,7 +3,8 @@
 {% block title %}Register{% endblock %}
 
 {% block content %}
-<div class="form-container">
+<div class="form-wrapper">
+  <div class="form-container">
     <h2 class="form-title text-center">Register</h2>
 
     {% if messages %}
@@ -14,9 +15,9 @@
         </ul>
     {% endif %}
 
-    <form method="post" action="{% url 'register-form' %}" class="form-container">
+    <form method="post" action="{% url 'register-form' %}">
         {% csrf_token %}
-         {{ form.as_p }}
+
         <label>First Name:</label>
         <input type="text" name="first_name" required>
 
@@ -40,6 +41,7 @@
     </form>
 
     <p class="form-footer">Already a member?</p>
-    <p><a href="{% url 'login-form' %}">Login here</a></p>
+    <p class="text-center"><a href="{% url 'login-form' %}">Login here</a></p>
+  </div>
 </div>
 {% endblock %}
