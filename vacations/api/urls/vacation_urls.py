@@ -12,8 +12,8 @@ urlpatterns = [
     path('vacations/add/', AddVacationView.as_view(), name='vacation-add'),
     path('vacations/<int:vacation_id>/edit/', EditVacationView.as_view(), name='vacation-edit'),
     path('vacations/<int:vacation_id>/delete/', DeleteVacationView.as_view(), name='vacation-delete'),
+    #  # Like / Unlike endpoints (API)
+    path('vacations/<int:vacation_id>/like/', LikeVacationView.as_view(), name='vacation-like'),
+    path('vacations/<int:vacation_id>/unlike/', UnlikeVacationView.as_view(), name='vacation-unlike'),
 
-    # Like / Unlike endpoints (API)
-    path('vacations/like/', LikeVacationView.as_view(), name='vacation-like'),
-    path('vacations/unlike/', UnlikeVacationView.as_view(), name='vacation-unlike'),
 ]

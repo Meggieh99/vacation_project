@@ -1,53 +1,44 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from rest_framework.permissions import IsAuthenticated
-from vacations.api.serializers.like_serializer import LikeActionSerializer
-from rest_framework.authentication import SessionAuthentication
-from vacations.models import Like
+from vacations.models import Like, Vacation
 
 
 class LikeVacationView(APIView):
     """
-    Add a like for a vacation by the authenticated user.
+    Add a like for a vacation by the authenticated user (via session).
     """
 
-    authentication_classes = [SessionAuthentication]
-    permission_classes = [IsAuthenticated]
+    def post(self, request, vacation_id: int) -> Response:
+        user_id = request.session.get("user_id")
 
-    def post(self, request) -> Response:
-        serializer: LikeActionSerializer = LikeActionSerializer(data=request.data)
-        if serializer.is_valid():
-            user_id: int = request.user.id
-            vacation_id: int = serializer.validated_data["vacation_id"]
+        if not user_id:
+            return Response({"error": "User not authenticated"}, status=status.HTTP_403_FORBIDDEN)
 
-            if Like.objects.filter(user_id=user_id, vacation_id=vacation_id).exists():
-                return Response({"error": "Already liked"}, status=status.HTTP_400_BAD_REQUEST)
+        if not Vacation.objects.filter(id=vacation_id).exists():
+            return Response({"error": "Vacation not found"}, status=status.HTTP_404_NOT_FOUND)
 
-            Like.objects.create(user_id=user_id, vacation_id=vacation_id)
-            return Response({"message": "Like added successfully"}, status=status.HTTP_201_CREATED)
+        if Like.objects.filter(user_id=user_id, vacation_id=vacation_id).exists():
+            return Response({"error": "Already liked"}, status=status.HTTP_400_BAD_REQUEST)
 
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        Like.objects.create(user_id=user_id, vacation_id=vacation_id)
+        return Response({"message": "Like added successfully"}, status=status.HTTP_201_CREATED)
 
 
 class UnlikeVacationView(APIView):
     """
-    Remove a like for a vacation by the authenticated user.
+    Remove a like for a vacation by the authenticated user (via session).
     """
-    authentication_classes = [SessionAuthentication]
-    permission_classes = [IsAuthenticated]
 
-    def post(self, request) -> Response:
-        serializer: LikeActionSerializer = LikeActionSerializer(data=request.data)
-        if serializer.is_valid():
-            user_id: int = request.user.id
-            vacation_id: int = serializer.validated_data["vacation_id"]
+    def post(self, request, vacation_id: int) -> Response:
+        user_id = request.session.get("user_id")
 
-            deleted, _ = Like.objects.filter(user_id=user_id, vacation_id=vacation_id).delete()
+        if not user_id:
+            return Response({"error": "User not authenticated"}, status=status.HTTP_403_FORBIDDEN)
 
-            if deleted == 0:
-                return Response({"error": "Like not found"}, status=status.HTTP_404_NOT_FOUND)
+        deleted, _ = Like.objects.filter(user_id=user_id, vacation_id=vacation_id).delete()
 
-            return Response({"message": "Like removed successfully"})
+        if deleted == 0:
+            return Response({"error": "Like not found"}, status=status.HTTP_404_NOT_FOUND)
 
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        return Response({"message": "Like removed successfully"})

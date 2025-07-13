@@ -1,3 +1,20 @@
+console.log('like.js loaded!');
+
+function getCookie(name) {
+  let cookieValue = null;
+  if (document.cookie && document.cookie !== '') {
+    const cookies = document.cookie.split(';');
+    for (let cookie of cookies) {
+      cookie = cookie.trim();
+      if (cookie.startsWith(name + '=')) {
+        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+        break;
+      }
+    }
+  }
+  return cookieValue;
+}
+
 document.addEventListener('DOMContentLoaded', function () {
   const buttons = document.querySelectorAll('.like-btn');
 
@@ -5,21 +22,18 @@ document.addEventListener('DOMContentLoaded', function () {
     button.addEventListener('click', async function () {
       const vacationId = this.dataset.vacationId;
       const liked = this.dataset.liked === 'true';
+
       const url = liked
         ? `/api/vacations/${vacationId}/unlike/`
         : `/api/vacations/${vacationId}/like/`;
-
-      const csrftoken = getCookie('csrftoken');
 
       try {
         const response = await fetch(url, {
           method: 'POST',
           headers: {
-            'Content-Type': 'application/json',
             'X-CSRFToken': getCookie('csrftoken')
           },
-          credentials: 'same-origin', 
-          body: JSON.stringify({ vacation_id: vacationId })
+          credentials: 'include' 
         });
 
         if (response.ok) {
@@ -33,19 +47,4 @@ document.addEventListener('DOMContentLoaded', function () {
       }
     });
   });
-
-  function getCookie(name) {
-    let cookieValue = null;
-    if (document.cookie && document.cookie !== '') {
-      const cookies = document.cookie.split(';');
-      for (let cookie of cookies) {
-        cookie = cookie.trim();
-        if (cookie.startsWith(name + '=')) {
-          cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-          break;
-        }
-      }
-    }
-    return cookieValue;
-  }
 });

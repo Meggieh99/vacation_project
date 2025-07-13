@@ -5,6 +5,7 @@ from vacations.models import User
 from django.http import HttpRequest, HttpResponse
 
 
+
 class LoginPageView(View):
     """
     Render the login form.
