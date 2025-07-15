@@ -9,7 +9,7 @@ urlpatterns: list = [
     path('login/', LoginView.as_view(), name='api-user-login'),
     
     
-   #  # 👇 THIS is the fix
-    path('vacations/<int:vacation_id>/like/', LikeVacationView.as_view(), name='vacation-like'),
-    path('vacations/<int:vacation_id>/unlike/', UnlikeVacationView.as_view(), name='vacation-unlike'),
+   
+   #  path('vacations/<int:vacation_id>/like/', LikeVacationView.as_view(), name='vacation-like'),
+   #  path('vacations/<int:vacation_id>/unlike/', UnlikeVacationView.as_view(), name='vacation-unlike'),
 ]

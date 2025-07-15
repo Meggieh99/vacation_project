@@ -55,26 +55,29 @@ class AddVacationView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
 class EditVacationView(APIView):
-    """
-    API endpoint to edit an existing vacation (Admin only).
-    """
-
     permission_classes = [IsAdminUser]
 
-    def put(self, request, vacation_id: int) -> Response:
-        """
-        Handle PUT request to update a vacation.
-        """
+    def get(self, request, vacation_id: int) -> Response:
         try:
             vacation = Vacation.objects.get(id=vacation_id)
         except Vacation.DoesNotExist:
             return Response({"error": "Vacation not found."}, status=status.HTTP_404_NOT_FOUND)
 
-        serializer: EditVacationSerializer = EditVacationSerializer(vacation, data=request.data)
+        serializer = EditVacationSerializer(vacation)
+        return Response(serializer.data)
+
+    def put(self, request, vacation_id: int) -> Response:
+        try:
+            vacation = Vacation.objects.get(id=vacation_id)
+        except Vacation.DoesNotExist:
+            return Response({"error": "Vacation not found."}, status=status.HTTP_404_NOT_FOUND)
+
+        serializer = EditVacationSerializer(vacation, data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response({"message": "Vacation updated successfully."})
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 
 class DeleteVacationView(APIView):

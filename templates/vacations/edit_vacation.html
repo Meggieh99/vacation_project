@@ -1,0 +1,32 @@
+{% extends 'layout.html' %}
+{% block title %}Edit Vacation{% endblock %}
+{% block content %}
+<div class="form-wrapper">
+  <form class="form-container" method="post">
+    {% csrf_token %}
+    <h2 class="form-title">Edit Vacation</h2>
+
+    <label>Country:</label>
+    <input type="text" name="country" value="{{ form.country }}">
+
+    <label>Start Date:</label>
+    <input type="date" name="start_date" value="{{ form.start_date }}">
+
+    <label>End Date:</label>
+    <input type="date" name="end_date" value="{{ form.end_date }}">
+
+    <label>Price:</label>
+    <input type="number" name="price" value="{{ form.price }}">
+
+    <label>Description:</label>
+    <input type="text" name="description" value="{{ form.description }}">
+
+    <button type="submit">Update</button>
+    <div class="error">
+      {% for field, error_list in errors.items %}
+        <p>{{ field }}: {{ error_list|join:", " }}</p>
+      {% endfor %}
+    </div>
+  </form>
+</div>
+{% endblock %}

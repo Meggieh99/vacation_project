@@ -1,77 +1,45 @@
 {% extends 'layout.html' %}
 {% load static %}
-{% block title %}Vacation Admin{% endblock %}
+{% block title %}Admin Vacation Management{% endblock %}
 
 {% block content %}
-<h2 class="form-title text-center">Manage Vacations</h2>
+<div class="container">
+    <h2 class="form-title text-center">Manage Vacations</h2>
 
-<div class="text-center mb-4">
-    <a href="{% url 'vacation-add' %}" class="nav-btn nav-vacation">➕ Add New Vacation</a>
+    <div class="text-center" style="margin-bottom: 20px;">
+        <a href="{% url 'vacation-add' %}" class="button vacation-btn">+ Add Vacation</a>
+    </div>
+
+    <div class="vacation-grid">
+        {% for vacation in vacations %}
+        <div class="vacation-card">
+            <div class="card-image">
+                <img src="{% static 'images/' %}{{ vacation.image_filename }}" alt="{{ vacation.country.name }}">
+            </div>
+
+            <div class="card-body">
+                <div class="country-name">{{ vacation.country.name }}</div>
+                <div class="date-range">{{ vacation.start_date }} - {{ vacation.end_date }}</div>
+                <div class="description">{{ vacation.description }}</div>
+                <div class="price">${{ vacation.price }}</div>
+
+                <div class="text-center" style="margin-top: 15px;">
+                    <a href="{% url 'vacation-edit-form' vacation.id %}" class="btn btn-sm btn-primary">Edit</a>
+
+                    <!-- Delete button handled by admin_actions.js -->
+                    <button 
+                        class="button logout-btn delete-btn" 
+                        data-vacation-id="{{ vacation.id }}">
+                        Delete
+                    </button>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
 </div>
+{% endblock %}
 
-<div class="vacation-grid">
-   {% for vacation in vacations %}
-   <div class="vacation-card">
-      <div class="card-image">
-         <img src="{% static 'images/' %}{{ vacation.image_filename }}" alt="{{ vacation.country }}">
-      </div>
-
-      <div class="card-body">
-         <div class="country-name">{{ vacation.country.name }}</div>
-         <div class="date-range">{{ vacation.start_date }} - {{ vacation.end_date }}</div>
-         <div class="description">{{ vacation.description }}</div>
-         <div class="price">${{ vacation.price }}</div>
-
-         <div class="admin-actions mt-2">
-            <a class="nav-btn edit-btn" href="{% url 'vacation-edit-form' vacation.id %}">✏️ Edit</a>
-            <button class="nav-btn logout-btn delete-btn" data-vacation-id="{{ vacation.id }}">🗑️ Delete</button>
-         </div>
-      </div>
-   </div>
-   {% endfor %}
-</div>
-
-<script>
-document.addEventListener('DOMContentLoaded', function () {
-    const deleteButtons = document.querySelectorAll('.delete-btn');
-
-    deleteButtons.forEach(button => {
-        button.addEventListener('click', function () {
-            const vacationId = this.dataset.vacationId;
-            if (confirm("Are you sure you want to delete this vacation?")) {
-                fetch(`/vacations/${vacationId}/delete/`, {
-                    method: 'DELETE',
-                    headers: {
-                        'X-CSRFToken': getCookie('csrftoken')
-                    },
-                    credentials: 'include'
-                }).then(response => {
-                    if (response.ok) {
-                        location.reload();
-                    } else {
-                        response.json().then(data => {
-                            alert("Error: " + (data.error || "Something went wrong"));
-                        });
-                    }
-                }).catch(err => alert("Error: " + err));
-            }
-        });
-    });
-
-    function getCookie(name) {
-        let cookieValue = null;
-        if (document.cookie && document.cookie !== '') {
-            const cookies = document.cookie.split(';');
-            for (let cookie of cookies) {
-                cookie = cookie.trim();
-                if (cookie.startsWith(name + '=')) {
-                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                    break;
-                }
-            }
-        }
-        return cookieValue;
-    }
-});
-</script>
+{% block scripts %}
+<script src="{% static 'js/admin_actions.js' %}"></script>
 {% endblock %}

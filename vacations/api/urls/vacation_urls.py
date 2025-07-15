@@ -3,7 +3,7 @@ from vacations.api.views.vacation_list_view import VacationListPageView
 from vacations.api.views.vacation_api_view import VacationListView, AddVacationView, EditVacationView, DeleteVacationView
 from vacations.api.views.like_view import LikeVacationView, UnlikeVacationView
 from vacations.api.views.vacation_detail_view import VacationDetailView
-from vacations.api.views.admin_vacation_view import AdminVacationListView
+from vacations.api.views.admin_vacation_view import AdminVacationListView,EditVacationFormView
 
 urlpatterns = [
     # Vacation page (HTML)
@@ -15,7 +15,6 @@ urlpatterns = [
     path('vacations/', VacationListView.as_view(), name='api-vacation-list'),
     path('vacations/add/', AddVacationView.as_view(), name='vacation-add'),
     path('vacations/<int:vacation_id>/edit-form/', EditVacationView.as_view(), name='vacation-edit-form'),
-
     path('vacations/<int:vacation_id>/delete/', DeleteVacationView.as_view(), name='vacation-delete'),
     path('vacations/<int:vacation_id>/details/', VacationDetailView.as_view(), name='vacation-detail'),
 
