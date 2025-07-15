@@ -13,7 +13,7 @@
       {% if messages %}
         <ul class="error-list">
           {% for message in messages %}
-            <li class="error">{{ message }}</li>
+            <li class="error">{{ message|safe }}</li>
           {% endfor %}
         </ul>
       {% endif %}
@@ -39,6 +39,7 @@
     <p class="text-center">
         <a href="{% url 'register-form' %}" class="register-link">Register now</a>
     </p>
+    
   </div>
 </div>
 {% endblock %}

@@ -10,7 +10,7 @@
     {% if messages %}
         <ul class="error-list">
             {% for message in messages %}
-                <li class="error">{{ message }}</li>
+                <li class="error">{{ message|safe }}</li>
             {% endfor %}
         </ul>
     {% endif %}
@@ -37,7 +37,7 @@
             oninput="this.setCustomValidity('')"
         >
 
-        <button type="submit">Register</button>
+        <button type="submit" class="btn-register">Register</button>
     </form>
 
     <p class="form-footer">Already a member?</p>

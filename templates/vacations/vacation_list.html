@@ -7,6 +7,16 @@
 
 <h2 class="form-title text-center">Vacation List</h2>
 
+<!-- Flash Messages -->
+{% if messages %}
+  <div class="text-center" style="margin-top: 20px;">
+    {% for message in messages %}
+      <div style="color: red; font-weight: bold;">
+        {{ message }}
+      </div>
+    {% endfor %}
+  </div>
+{% endif %}
 <div class="vacation-grid">
    {% for vacation in vacations %}
    <div class="vacation-card">
@@ -27,6 +37,8 @@
          <div class="date-range">{{ vacation.start_date }} - {{ vacation.end_date }}</div>
          <div class="description">{{ vacation.description }}</div>
          <div class="price">${{ vacation.price }}</div>
+         <a href="{% url 'vacation-detail' vacation.id %}" class="nav-btn details-btn">Details</a>
+
       </div>
    </div>
    {% endfor %}

@@ -3,45 +3,63 @@ from django.views import View
 from django.urls import reverse
 from vacations.models import User
 from django.http import HttpRequest, HttpResponse
-
+from django.contrib import messages
 
 
 class LoginPageView(View):
     """
-    Render the login form.
+    Display the login form page.
     """
 
     def get(self, request: HttpRequest) -> HttpResponse:
-        """Display login page."""
+        """
+        Handle GET request to render the login form.
+        """
         return render(request, 'auth/login.html')
 
 
 class LoginFormHandlerView(View):
     """
-    Process login form submission and manage session.
+    Handle login form submission and manage session.
     """
 
     def post(self, request: HttpRequest) -> HttpResponse:
-        email = request.POST.get('email')
-        password = request.POST.get('password')
+        """
+        Handle POST request to authenticate the user and start session.
+        """
+        email: str = request.POST.get('email')
+        password: str = request.POST.get('password')
 
-        user = User.objects.filter(email=email, password=password).first()
+        user: User | None = User.objects.filter(email=email, password=password).first()
+
+        if not user:
+               
+         register_url = reverse('register-form')
+         messages.error(request, f"Email not registered. <a href='{register_url}'>Click here to register</a>.")
+         return render(request, 'auth/login.html')
+
 
         if user:
             request.session['user_id'] = user.id
             return redirect(reverse('vacation-list'))
+        
+        messages.error(request, "Invalid email or password.")
+        return render(request, 'auth/login.html')
+        
 
-        return render(request, 'auth/login.html', {
-            'error_message': 'Invalid email or password'
-        })
-    
+   
+
+
 class LogoutView(View):
     """
-    Log the user out and redirect to login form.
+    Handle user logout and session cleanup.
     """
 
-    def get(self, request: HttpRequest) -> HttpResponse:
+    def post(self, request: HttpRequest) -> HttpResponse:
+        """
+        Handle POST request to flush session and remove CSRF cookie.
+        """
         request.session.flush()
-        return redirect('login-form')
-   
-    
+        response: HttpResponse = redirect('login-form')
+        response.delete_cookie('csrftoken')  # Explicitly remove CSRF token cookie
+        return response

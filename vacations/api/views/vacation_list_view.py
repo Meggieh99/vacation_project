@@ -16,8 +16,6 @@ class VacationListPageView(TemplateView):
 
     def dispatch(self, request, *args, **kwargs):
         user_id = request.session.get('user_id')
-        if not user_id:
-            return redirect('login-form')
         return super().dispatch(request, *args, **kwargs)
     
     def get_context_data(self, **kwargs):
